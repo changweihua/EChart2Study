@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>住院费用同期对比</h2>
+<div style="width: 100%;">
+<div style="width: 100%;background-color:lightblue; margin: 2% 0; height: 35px;">
+        <div style="float:right;line-height:35px;padding:0 20px;">
+            开始时间：<input type="text" class="datepicker" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" id="dtStart" />
+		    结束时间：<input type="text" class="datepicker" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="dtEnd" />
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+<div id="main1" class="ec-chart" style="width: 90%; margin: 2% auto; height: 300px;">
+    </div>
+<div style="clear: both;">
+    </div>
+    <div id="main2" class="ec-chart" style="width: 90%; margin: 2% auto; height: 300px;">
+    </div>
+
+    </div>
+
+    <script>
+
+
+    // 使用
+        require(
+            [
+                'echarts',
+                'echarts/chart/line',
+                'echarts/chart/bar',
+                 'echarts/chart/pie',
+                'echarts/chart/gauge'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart1 = ec.init(document.getElementById('main1'));
+                var myChart2 = ec.init(document.getElementById('main2'));
+
+                var action1 = function () {
+                    doAction('GetData1', myChart1, function (json) {
+
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'bar',
+                                data: serie.data,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '费用类别同期对比',
+                                x: 'center'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends,
+                                x: 80, borderWidth: 1,
+                                y: 30
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                splitLine: {
+                                    show: true
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                max: 8,
+                                min: 0,
+                                splitLine: {
+                                    show: true
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+                var action2 = function () {
+                    doAction('GetData2', myChart2, function (json) {
+
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'bar',
+                                data: serie.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '科室收入同期对比',
+                                x: 'center'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends,
+                                x: 80, borderWidth: 1,
+                                y: 30
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                splitLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                symbol: 'emptyRectangle',
+                                max: 8,
+                                min: 0,
+                                splitLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+                loadTask.push(action1, action2);
+                invokeTask();
+
+
+            });
+</script>
+
+

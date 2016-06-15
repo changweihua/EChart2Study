@@ -1,0 +1,188 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>
+    再入院</h2>
+<div style="width: 100%;">
+<div style="width: 100%;background-color:lightblue; margin: 2% 0; height: 35px;">
+        <div style="float:right;line-height:35px;padding:0 20px;">
+            开始时间：<input type="text" class="datepicker" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" id="dtStart" />
+		    结束时间：<input type="text" class="datepicker" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="dtEnd" />
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div style="width: 90%; margin: 2% auto; height: 300px;">
+
+
+    <table id="tb" class="table table-bordered table-condensed">
+    <caption>出院再住院情况</caption>
+    <thead>
+        <tr>
+            <th class="datagrid-sortable" style="cursor: pointer;">
+                序号
+            </th>
+            <th>
+                统计名称
+            </th>
+            <th class="datagrid-sortable" style="cursor: pointer;">
+                本年门诊量
+            </th>
+            <th>
+                去年门诊楼量
+            </th>
+            <th class="datagrid-sortable" style="cursor: pointer;">
+                增长量
+            </th>
+            <th>
+                增长率
+            </th>
+        </tr>
+    </thead>
+    <tbody id="rsbody">
+       
+    </tbody>
+</table>
+<div id="Pagination" class="pagination">
+    <!-- 这里显示分页 -->
+</div>
+
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div id="main1" class="ec-chart" style="width: 90%; margin: 2% auto; height: 300px;">
+    </div>
+</div>
+
+<script>
+    var $pg = $("#Pagination");
+
+    function loadData(url, data) {
+        //通过ajax发请求获取数据来修改页面
+        $.getJSON(
+            url,
+            data,
+            function (json) {
+                $("#rsbody").empty().html($("#trTmpl").render(json.data));
+                $pg.pagination(111, opt)
+            });
+    }
+
+    function pageselectCallback(page_index, pager) {
+
+        // 获取加载元素
+        var opt = $.extend(pagerOption, {
+            current_page: page_index
+        });
+
+        //回调中重新设置分页
+        loadData("/MZGZLMX/GetData1", { currentPage: opt.current_page, recordsPerPage: opt.items_per_page });
+
+        //阻止单击事件
+        return false;
+    }
+
+    //初始化
+    var opt = $.extend(pagerOption, {
+        callback: pageselectCallback
+    });
+
+    loadData("/MZGZLMX/GetData1", { currentPage: 0 });
+
+</script>
+<script>
+
+
+    // 使用
+    require(
+            [
+                'echarts',
+                'echarts/chart/line',
+                'echarts/chart/bar',
+                'echarts/chart/pie'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart1 = ec.init(document.getElementById('main1'));
+
+                var action1 = function () {
+                    doAction('GetData1', myChart1, function (json) {
+
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'line',
+                                data: serie.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    data: [{
+                                        type: 'average',
+                                        name: '平均值'
+                                    }]
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '平均住院天数',
+                                show: false
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                symbol: 'emptyRectangle',
+                                max: 25,
+                                min: 0,
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+                loadTask.push(action1);
+                invokeTask();
+
+            });
+</script>
+
+

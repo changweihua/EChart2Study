@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>@ViewBag.Message</h2>
+<ul>
+@foreach (Tuple<string, string, string> item in ViewBag.Controllers)
+{
+    <li><a href="/@item.Item3" title="@item.Item1" target="_blank">@item.Item2</a></li>
+}
+</ul>
+<p>
+    To learn more about ASP.NET MVC visit <a href="http://asp.net/mvc" title="ASP.NET MVC Website">http://asp.net/mvc</a>.
+</p>

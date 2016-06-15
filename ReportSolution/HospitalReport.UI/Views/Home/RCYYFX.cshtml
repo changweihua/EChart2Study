@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "RCYYFX";
+}
+
+<h2>@ViewBag.Message</h2>
+<ul>
+@foreach (Tuple<string, string, string> item in ViewBag.Controllers)
+{
+    <li><a href="/@item.Item3" title="@item.Item1" target="_blank">@item.Item2</a></li>
+}
+</ul>

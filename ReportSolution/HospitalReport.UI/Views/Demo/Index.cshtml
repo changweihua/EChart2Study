@@ -1,0 +1,35 @@
+﻿@model IList<HospitalReport.Model.DemoModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>
+    Index</h2>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 50px">
+                ID
+            </th>
+            <th style="width: 100px">
+                Name
+            </th>
+            <th style="width: 100px">
+                Age
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="width: 50px">@item.ID
+                </td>
+                <td style="width: 100px">@item.Name
+                </td>
+                <td style="width: 100px">@item.Age
+                </td>
+            </tr> 
+        }
+    </tbody>
+</table>

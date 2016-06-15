@@ -1,0 +1,302 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<h2>
+    门诊收入分析</h2>
+<div style="width: 100%;">
+<div style="width: 100%;background-color:lightblue; margin: 2% 0; height: 35px;">
+        <div style="float:right;line-height:35px;padding:0 20px;">
+            开始时间：<input type="text" class="datepicker" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" id="dtStart" />
+		    结束时间：<input type="text" class="datepicker" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="dtEnd" />
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div id="main1" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div id="main2" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div id="main3" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div id="main4" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+</div>
+<script>
+
+
+
+
+
+    // 使用
+    require(
+            [
+                'echarts',
+                'echarts/chart/line',
+                'echarts/chart/pie',
+                'echarts/chart/bar'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart1 = ec.init(document.getElementById('main1'));
+                var myChart2 = ec.init(document.getElementById('main2'));
+                var myChart3 = ec.init(document.getElementById('main3'));
+                var myChart4 = ec.init(document.getElementById('main4'));
+
+                var action1 = function () {
+                    doAction('GetData1', myChart1, function (json) {
+                        return {
+                            title: {
+                                text: '门急诊费用分布',
+                                x: 'left'
+                            },
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: "{a} <br/>{b} : {c} ({d}%)"
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                x: 'right',
+                                y: 'center',
+                                data: json.legends,
+                                formatter: function (name) {
+                                    var index = $.inArray(name, json.legends);
+                                    return name + json.data[index].value + ' 万元';
+                                }
+                            },
+                            series: [{
+                                name: '费用分布',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '60%'],
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        },
+                                        labelLine: {
+                                            show: true
+                                        }
+                                    },
+                                    emphasis: {
+                                        label: {
+                                            show: true
+                                        },
+                                        labelLine: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                data: json.data
+                            }]
+                        };
+
+                    });
+                };
+
+                var action2 = function () {
+                    doAction('GetData2', myChart2, function (json) {
+
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'line',
+                                data: serie.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '门诊费用趋势'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: false,
+                            xAxis: [{
+                                type: 'category',
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                symbol: 'emptyRectangle',
+                                max: 135,
+                                min: 0,
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+
+                var action3 = function () {
+                    doAction('GetData3', myChart3, function (json) {
+
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'line',
+                                data: serie.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '门诊人次费用'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: false,
+                            xAxis: [{
+                                type: 'category',
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                symbol: 'emptyRectangle',
+                                max: 14700,
+                                min: 0,
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+
+                var action4 = function () {
+                    doAction('GetData3', myChart4, function (json) {
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'bar',
+                                data: serie.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '6个月费用对比'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: false,
+                            xAxis: [{
+                                type: 'category',
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                symbol: 'emptyRectangle',
+                                max: 14700,
+                                min: 0,
+                                splitLine: {
+                                    show: false,
+                                    lineStyle: {
+                                        type: 'dotted'
+                                    }
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+                loadTask.push(action1, action2, action3, action4);
+                invokeTask();
+
+            });
+</script>

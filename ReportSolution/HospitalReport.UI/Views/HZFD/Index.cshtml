@@ -1,0 +1,369 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>
+    患者负担</h2>
+<div style="width: 100%;">
+<div style="width: 100%;background-color:lightblue; margin: 2% 0; height: 35px;">
+        <div style="float:right;line-height:35px;padding:0 20px;">
+            开始时间：<input type="text" class="datepicker" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" id="dtStart" />
+		    结束时间：<input type="text" class="datepicker" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="dtEnd" />
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div id="main1" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div id="main2" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div id="main3" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div id="main4" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+</div>
+<script>
+
+
+
+
+
+    // 使用
+    require(
+            [
+                'echarts',
+                'echarts/chart/line',
+                'echarts/chart/gauge'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart1 = ec.init(document.getElementById('main1'));
+                var myChart2 = ec.init(document.getElementById('main2'));
+                var myChart3 = ec.init(document.getElementById('main3'));
+                var myChart4 = ec.init(document.getElementById('main4'));
+
+                var cseries = [{
+                    name: 'centerserie',
+                    type: 'gauge',
+                    z: 3,
+                    min: 0,
+                    max: 100,
+                    splitNumber: 5,
+                    axisLine: { // 坐标轴线
+                        lineStyle: { // 属性lineStyle控制线条样式
+                            width: 5
+                        }
+                    },
+                    axisTick: { // 坐标轴小标记
+                        length: 15, // 属性length控制线长
+                        lineStyle: { // 属性lineStyle控制线条样式
+                            color: 'auto'
+                        }
+                    },
+                    splitLine: { // 分隔线
+                        length: 20, // 属性length控制线长
+                        lineStyle: { // 属性lineStyle（详见lineStyle）控制线条样式
+                            color: 'auto'
+                        }
+                    },
+                    title: {
+                        offsetCenter: [0, '80%'],
+                        textStyle: { // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontWeight: 'bold',
+                            fontSize: 20
+                        }
+                    },
+                    detail: {
+                        textStyle: { // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontSize: '20', fontWeight: 'bold'
+                        }
+                    },
+                    data: []
+                }, {
+                    name: 'leftserie',
+                    type: 'gauge',
+                    center: ['20%', '55%'], // 默认全局居中
+                    radius: '50%',
+                    min: 0,
+                    max: 1000,
+                    endAngle: 45,
+                    splitNumber: 5,
+                    axisLine: { // 坐标轴线
+                        lineStyle: { // 属性lineStyle控制线条样式
+                            width: 5
+                        }
+                    },
+                    axisTick: { // 坐标轴小标记
+                        length: 12, // 属性length控制线长
+                        lineStyle: { // 属性lineStyle控制线条样式
+                            color: 'auto'
+                        }
+                    },
+                    splitLine: { // 分隔线
+                        length: 20, // 属性length控制线长
+                        lineStyle: { // 属性lineStyle（详见lineStyle）控制线条样式
+                            color: 'auto'
+                        }
+                    },
+                    pointer: {
+                        width: 5
+                    },
+                    title: {
+                        offsetCenter: [0, '90%'], // x, y，单位px
+                        textStyle: { fontSize: '20', fontWeight: 'bold' }
+                    },
+                    detail: {
+                        textStyle: { // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontSize: '20', fontWeight: 'bold'
+                        }
+                    },
+                    data: []
+                }, {
+                    name: 'rightserie',
+                    type: 'gauge',
+                    center: ['80%', '55%'], // 默认全局居中
+                    radius: '50%',
+                    min: 0,
+                    max: 1000,
+                    startAngle: 135,
+                    splitNumber: 5,
+                    axisLine: { // 坐标轴线
+                        lineStyle: { // 属性lineStyle控制线条样式
+                            width: 5
+                        }
+                    },
+                    axisTick: { // 坐标轴小标记
+                        length: 12, // 属性length控制线长
+                        lineStyle: { // 属性lineStyle控制线条样式
+                            color: 'auto'
+                        }
+                    },
+                    splitLine: { // 分隔线
+                        length: 20, // 属性length控制线长
+                        lineStyle: { // 属性lineStyle（详见lineStyle）控制线条样式
+                            color: 'auto'
+                        }
+                    },
+                    pointer: {
+                        width: 5
+                    },
+                    title: {
+                        offsetCenter: [0, '90%'], // x, y，单位px
+                        textStyle: { fontSize: '20', fontWeight: 'bold' }
+                    },
+                    detail: {
+                        textStyle: { // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                            fontSize: '20', fontWeight: 'bold'
+                        }
+                    },
+                    data: []
+                }];
+
+                var action1 = function () {
+                    doAction('GetData1', myChart1, function (json) {
+
+                        var series = cseries;
+                        var names = ['费用药占比', '门诊人次药费', '门诊人次费用'];
+                        series[0].name = names[0];
+                        series[1].name = names[1];
+                        series[2].name = names[2];
+
+                        $(json.series).each(function (index, serie) {
+                            var i = $.inArray(serie.name, names);
+                            series[i].data = serie.data;
+                            series[i].min = serie.min;
+                            series[i].max = serie.max;
+                        });
+
+                        return {
+                            tooltip: {
+                                formatter: "{a} <br/>{c}"
+                            },
+                            title: {
+                                text: '门诊人次费用统计',
+                                x: 'left'
+                            },
+                            series: series
+                        };
+
+                    });
+                };
+
+                var action2 = function () {
+                    doAction('GetData2', myChart2, function (json) {
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'line',
+                                data: serie.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    data: [{
+                                        type: 'average',
+                                        name: '平均值'
+                                    }]
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '门诊人次费用'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                splitLine: {
+                                    show: false
+                                },
+                                axisLabel: {
+                                    formatter: '{value}',
+                                    textStyle: {
+                                        align: 'left'
+                                    }
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                max: 325,
+                                min: 0,
+                                splitLine: {
+                                    show: false
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+
+                var action3 = function () {
+                    doAction('GetData3', myChart3, function (json) {
+                        var series = cseries;
+                        var names = ['费用药占比', '住院人次药费', '住院人次费用'];
+                        series[0].name = names[0];
+                        series[1].name = names[1];
+                        series[2].name = names[2];
+
+                        $(json.series).each(function (index, serie) {
+                            var i = $.inArray(serie.name, names);
+                            series[i].data = serie.data;
+                            series[i].min = serie.min;
+                            series[i].max = serie.max;
+                        });
+
+                        return {
+                            tooltip: {
+                                formatter: "{a} <br/>{c}"
+                            },
+                            title: {
+                                text: '门诊人次费用统计',
+                                x: 'left'
+                            },
+                            series: series
+                        };
+
+                    });
+
+                };
+
+                var action4 = function () {
+                    doAction('GetData4', myChart4, function (json) {
+                        var series = [];
+                        $(json.series).each(function (index, serie) {
+                            series.push({
+                                name: serie.name,
+                                type: 'line',
+                                data: serie.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    data: [{
+                                        type: 'average',
+                                        name: '平均值'
+                                    }]
+                                }
+                            });
+                        });
+
+                        return {
+                            title: {
+                                text: '住院人次费用'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                splitLine: {
+                                    show: false
+                                },
+                                axisLabel: {
+                                    formatter: '{value}',
+                                    textStyle: {
+                                        align: 'left'
+                                    }
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                max: 12250,
+                                min: 0,
+                                splitLine: {
+                                    show: false
+                                }
+                            }],
+                            series: series
+                        };
+
+                    });
+                };
+
+                loadTask.push(action1, action2, action3, action4);
+                invokeTask();
+
+            });
+</script>
+
+

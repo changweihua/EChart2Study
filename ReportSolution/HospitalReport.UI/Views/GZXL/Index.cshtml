@@ -1,0 +1,288 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<h2>
+    工作效率</h2>
+<div style="width: 100%;">
+    <div style="width: 100%;background-color:lightblue; margin: 2% 0; height: 35px;">
+        <div style="float:right;line-height:35px;padding:0 20px;">
+            开始时间：<input type="text" class="datepicker" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" id="dtStart" />
+		    结束时间：<input type="text" class="datepicker" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="dtEnd" />
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div id="main1" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div id="main2" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div id="main3" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+    <div id="main4" class="ec-chart" style="width: 46%; margin: 2% 0; height: 300px;
+        float: left;">
+    </div>
+</div>
+<script>
+
+
+
+
+
+    // 使用
+    require(
+            [
+                'echarts',
+                'echarts/chart/line',
+                'echarts/chart/pie'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart1 = ec.init(document.getElementById('main1'));
+                var myChart2 = ec.init(document.getElementById('main2'));
+                var myChart3 = ec.init(document.getElementById('main3'));
+                var myChart4 = ec.init(document.getElementById('main4'));
+
+                var action1 = function () {
+                    doAction('GetData1', myChart1, function (json) {
+                        return {
+                            title: {
+                                text: '患者平均住院日'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                splitLine: {
+                                    show: false
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                splitLine: {
+                                    show: false
+                                }
+                            }],
+                            series: [{
+                                name: '患者平均住院日',
+                                type: 'line',
+                                data: json.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    data: [{
+                                        type: 'average',
+                                        name: '平均值'
+                                    }]
+                                }
+                            }]
+                        };
+
+                    });
+                };
+
+
+                var action2 = function () {
+                    doAction('GetData2', myChart2, function (json) {
+                        return {
+                            title: {
+                                text: '平均床位工作日'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                splitLine: {
+                                    show: false
+                                },
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                splitLine: {
+                                    show: false
+                                }
+                            }],
+                            series: [{
+                                name: '平均床位工作日',
+                                type: 'line',
+                                data: json.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    data: [{
+                                        type: 'average',
+                                        name: '平均值'
+                                    }]
+                                }
+                            }]
+                        };
+
+                    });
+                }
+
+
+                var action3 = function () {
+                    doAction('GetData3', myChart3, function (json) {
+                        return {
+                            title: {
+                                text: '平均床位使用率'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                splitLine: {
+                                    show: false
+                                },
+
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                splitLine: {
+                                    show: false
+                                }
+                            }],
+                            series: [{
+                                name: '平均床位使用率',
+                                type: 'line',
+                                data: json.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    data: [{
+                                        type: 'average',
+                                        name: '平均值'
+                                    }]
+                                }
+                            }]
+                        };
+
+                    });
+                };
+
+
+                var action4 = function () {
+                    doAction('GetData4', myChart4, function (json) {
+                        return {
+                            title: {
+                                text: '平均床位周转数'
+                            },
+                            tooltip: {
+                                trigger: 'item'
+                            },
+                            legend: {
+                                data: json.legends
+                            },
+                            grid: {
+                                borderWidth: 0
+                            },
+                            calculable: true,
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                splitLine: {
+                                    show: false
+                                },
+
+                                axisLabel: {
+                                    rotate: 45
+                                },
+                                data: json.categories
+                            }],
+                            yAxis: [{
+                                type: 'value',
+                                splitLine: {
+                                    show: false
+                                }
+                            }],
+                            series: [{
+                                name: '平均床位周转数',
+                                type: 'line',
+                                data: json.data,
+                                smooth: true,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                markLine: {
+                                    data: [{
+                                        type: 'average',
+                                        name: '平均值'
+                                    }]
+                                }
+                            }]
+                        };
+
+                    });
+
+                };
+
+                loadTask.push(action1, action2, action3, action4);
+                invokeTask();
+
+            });
+</script>
